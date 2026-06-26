@@ -1,31 +1,27 @@
-name: Build .exe (Gerador OS)
+name: Package Gerador OS (Portátil)
 
 on:
   push:
     branches: [ main, master ]
-  workflow_dispatch:  # Permite executar manualmente
+  workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: windows-latest
+  package:
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: Install dependencies
+      - name: Package portable distribution
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Build .exe with PyInstaller
-        run: |
-          pyinstaller --onefile --windowed --name "GeradorOS" --icon NONE main.py
+          mkdir -p dist/gerador-os
+          cp main.py dist/gerador-os/
+          cp iniciar.bat dist/gerador-os/
+          cp requirements.txt dist/gerador-os/
+          cd dist
+          zip -r gerador-os-portatil.zip gerador-os/
 
       - uses: actions/upload-artifact@v4
         with:
-          name: GeradorOS
-          path: dist/GeradorOS.exe
+          name: gerador-os-portatil
+          path: dist/gerador-os-portatil.zip
